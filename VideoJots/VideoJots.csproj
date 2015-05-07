@@ -41,6 +41,19 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="ffmpegsumo.dll" />
+    <Content Include="icudt.dll" />
+    <Content Include="index.html" />
+    <Content Include="libEGL.dll" />
+    <Content Include="libGLESv2.dll" />
+    <Content Include="nw.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="nw.pak" />
+    <None Include="package.json" />
+    <None Include="script.ps1" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
