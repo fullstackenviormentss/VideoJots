@@ -42,17 +42,45 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="collections.js" />
     <Content Include="ffmpegsumo.dll" />
+    <Content Include="html5.html" />
     <Content Include="icudt.dll" />
+    <Content Include="impress.js" />
     <Content Include="index.html" />
+    <Content Include="jquery-2.1.1.min.js" />
+    <Content Include="js\collections.js" />
+    <Content Include="js\impress.js" />
+    <Content Include="js\jquery-2.1.1.min.js" />
+    <Content Include="js\jquery.js" />
+    <Content Include="js\main.js" />
+    <Content Include="js\transcript.js" />
     <Content Include="libEGL.dll" />
     <Content Include="libGLESv2.dll" />
+    <Content Include="main.js" />
     <Content Include="nw.exe" />
+    <Content Include="presentation.html" />
+    <Content Include="styles.css" />
+    <Content Include="transcript.js" />
+    <Content Include="videoexample.html" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="css\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="collections.js.map" />
+    <None Include="main.js.map" />
     <None Include="nw.pak" />
     <None Include="package.json" />
     <None Include="script.ps1" />
+    <None Include="transcript.js.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="collections.ts" />
+    <TypeScriptCompile Include="jquery.d.ts" />
+    <TypeScriptCompile Include="node.d.ts" />
+    <TypeScriptCompile Include="transcript.ts" />
+    <TypeScriptCompile Include="youtube.d.ts" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
