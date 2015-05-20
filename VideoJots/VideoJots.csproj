@@ -43,18 +43,26 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="collections.js" />
+    <Content Include="css\bootstrap.css" />
+    <Content Include="css\bootstrap.min.css" />
+    <Content Include="css\jquery-ui.css" />
+    <Content Include="css\portfolio-item.css" />
+    <Content Include="css\thumbnail-gallery.css" />
     <Content Include="ffmpegsumo.dll" />
     <Content Include="html5.html" />
     <Content Include="icudt.dll" />
     <Content Include="impress.js" />
     <Content Include="index.html" />
     <Content Include="jquery-2.1.1.min.js" />
+    <Content Include="js\bootstrap-confirmation.js" />
+    <Content Include="js\bootstrap-tooltip.js" />
+    <Content Include="js\bootstrap.js" />
+    <Content Include="js\bootstrap.min.js" />
     <Content Include="js\collections.js" />
     <Content Include="js\impress.js" />
+    <Content Include="js\index.js" />
     <Content Include="js\jquery-2.1.1.min.js" />
     <Content Include="js\jquery.js" />
-    <Content Include="js\main.js" />
-    <Content Include="js\transcript.js" />
     <Content Include="libEGL.dll" />
     <Content Include="libGLESv2.dll" />
     <Content Include="main.js" />
@@ -64,9 +72,7 @@
     <Content Include="transcript.js" />
     <Content Include="videoexample.html" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="css\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="collections.js.map" />
     <None Include="main.js.map" />
