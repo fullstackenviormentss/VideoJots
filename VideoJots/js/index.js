@@ -5,6 +5,7 @@
         var pnl = document.getElementById("pnlNotes");
         //pnl.value += tb.value;
         var text = tb.value;
+        var posChange = false;
         if (text.charAt(0) === '/' && text.charAt(text.length - 1) === '/') {
             //rewind if - number
             //forward if + number
@@ -14,9 +15,12 @@
                 //var ytplayer = document.getElementById('player');
                 //ytplayer.seekTo(ytplayer.getCurrentTime() + rewind);
                 player.seekTo(player.getCurrentTime() + rewind);
+                posChange = true;
             }
         }
-        $("#pnlNotes").append(tb.value);
+        if (!posChange) {
+            $("#pnlNotes").append('<br/>' + tb.value);
+        }
         tb.value = '';
         return false;
     }
