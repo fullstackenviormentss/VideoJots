@@ -30,7 +30,9 @@
             <input type="text" class="form-control" id="tbNotes" onkeypress="return runScript(event)">
         </div>
     </div>
-    <div class="col-md-3"></div>
+    <div class="col-md-3">
+        <div id="tagArray"></div>
+    </div>
 </div>
     
 <script>
@@ -49,7 +51,7 @@
         player = new YT.Player('player', {
             height: '600',
             width: '1000',
-            videoId: 'b4zr9Zx5WiE',
+            videoId: 'Jbt_hVoQuOM',
             events: {
                 'onReady': onPlayerReady,
                 'onStateChange': onPlayerStateChange
