@@ -15,10 +15,33 @@
         <div id="player"></div>
     </div>
     <div class="col-md-3">
-        <div style="width:95%" class="panel panel-default">
-            <div class="panel-body" id="pnlNotes">
-                
+        <div style="width: 95%" class="panel panel-default">
+            <div role="tabpanel">
+
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#output" aria-controls="output" role="tab" data-toggle="tab">Output</a></li>
+                    <li role="presentation"><a href="#source" aria-controls="source" role="tab" data-toggle="tab">Source</a></li>
+                    <li role="presentation"><a href="#formatting" aria-controls="formatting" role="tab" data-toggle="tab">Formatting</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="output">
+                        <div class="panel-body" id="pnlNotes">
+
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="source">
+                        <textarea id="txtSource"></textarea>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="formatting">
+                        Formatting rules:
+                    </div>
+                </div>
+
             </div>
+            
         </div>
     </div>
 </div>

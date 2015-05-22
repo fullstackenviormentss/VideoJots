@@ -45,3 +45,6 @@ Temporary Items
 
 bin
 obj
+*.nw
+*.zip
+VideoJots/app.nw
