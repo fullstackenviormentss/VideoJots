@@ -12,6 +12,16 @@
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-8">
+        <input type="text" class="form-control" id="tbURL" onkeypress="return loadVideo(event)">
+    </div>
+    <div class="col-md-3">
+        <button type="button" class="btn btn-primary" onclick=" loadVideoURL()">Play</button>
+    </div>
+</div>
+    
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-8">
         <div id="player"></div>
     </div>
     <div class="col-md-3">
@@ -22,7 +32,7 @@
                 <ul class="nav nav-tabs" role="tablist">
                     <li role="presentation" class="active"><a href="#output" aria-controls="output" role="tab" data-toggle="tab">Output</a></li>
                     <li role="presentation"><a href="#source" aria-controls="source" role="tab" data-toggle="tab">Source</a></li>
-                    <li role="presentation"><a href="#formatting" aria-controls="formatting" role="tab" data-toggle="tab">Formatting</a></li>
+                    <li role="presentation"><a href="#slashlog" aria-controls="formatting" role="tab" data-toggle="tab">SlashLog</a></li>
                 </ul>
 
                 <!-- Tab panes -->
@@ -35,13 +45,11 @@
                     <div role="tabpanel" class="tab-pane" id="source">
                         <textarea id="txtSource"></textarea>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="formatting">
+                    <div role="tabpanel" class="tab-pane" id="slashlog">
                         Formatting rules:
                     </div>
                 </div>
-
             </div>
-            
         </div>
     </div>
 </div>

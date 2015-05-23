@@ -2,6 +2,26 @@
     window.tagArray = [];
 });
 
+function loadVideo(e) {
+    if (e.keyCode === 13) {
+        loadVideoURL();
+        return false;
+    }
+}
+
+function loadVideoURL() {
+    var tb = document.getElementById("tbURL");
+    var videoid = tb.value.split('v=')[1].split('&')[0];
+    player.loadVideoById(videoid);
+    clearPage();
+}
+
+function clearPage() {
+    $("#pnlNotes").html('');
+    $("#txtSource").text('');
+    $("#tbNotes").html('');
+}
+
 function runScript(e) {
     if (e.keyCode === 13) {
         var tb = document.getElementById("tbNotes");
