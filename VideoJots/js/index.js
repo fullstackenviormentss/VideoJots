@@ -1,4 +1,22 @@
-﻿$(function() {
+﻿var S_PAUSE = '/p/';
+var S_RESUME = '/r/';
+var S_NEWLINE = '/n/';
+var S_POP = '//';
+
+var CMDTEXT={};
+CMDTEXT[S_PAUSE] = 'Pause';
+CMDTEXT[S_RESUME] = 'Resume';
+CMDTEXT[S_NEWLINE] = 'Next line';
+
+var COMMAND= {
+    PAUSE: "pause",
+    RESUME: "resume",
+    NEWLINE: "newline",
+    POP:"pop",
+    NONE:"none"
+}
+
+$(function () {
     window.tagArray = [];
     window.textSource = '';
 });
@@ -31,12 +49,16 @@ function convertSourceToOutput(sourceText)
 function keyUpEvent(e) {
     var tb = document.getElementById("tbNotes");
     var text = tb.value;
-    if (text === '/p/') {
-        $("#spnAlert").text('Pause');
+    if (text === S_PAUSE) {
+        $("#spnAlert").text(CMDTEXT[S_PAUSE]);
     }
-    else if (text === '/r/') {
-        $("#spnAlert").text('Resume');
-    } else if (text.charAt(0) === '/' && text.charAt(text.length - 1) === '/') {
+    else if (text === S_RESUME) {
+        $("#spnAlert").text(CMDTEXT[S_RESUME]);
+    }
+    else if (text === S_NEWLINE) {
+        $("#spnAlert").text(CMDTEXT[S_NEWLINE]);
+    }
+    else if (text.charAt(0) === '/' && text.charAt(text.length - 1) === '/') {
             //rewind if - number
             //forward if + number
             var inside = text.substring(1, text.length - 1);
@@ -55,6 +77,23 @@ function keyUpEvent(e) {
     return false;
 }
 
+function getCommand(text) {
+    var command = COMMAND.NONE;
+    if (text === S_PAUSE) {
+        command = COMMAND.PAUSE;
+    }
+    else if (text === S_RESUME) {
+        command = COMMAND.RESUME;
+    }
+    else if (text === S_NEWLINE) {
+        command = COMMAND.NEWLINE;
+    }
+    else if (text === S_POP) {
+        command = COMMAND.POP;
+    }
+    return command;
+}
+
 function addToSource(text) {
     window.textSource += '{|' + text + '|}';
     $("#txtSource").text(window.textSource);
@@ -65,22 +104,19 @@ function keyPressEvent(e) {
     var text = tb.value;
     
     if (e.keyCode === 13) {
-        
-        //process
         var pnl = document.getElementById("pnlNotes");
-        //pnl.value += tb.value;
-        
+        var command = getCommand(text);
         var doNotDisplay = false;
-        if (text === '//') {
+        if (command === COMMAND.POP) {
             //pop last tag from array
             window.tagArray.remove(window.tagArray.length - 1);
             doNotDisplay = true;
             displayTagArray();
-        } else if (text === '/p/') {
+        } else if (command === COMMAND.PAUSE) {
             player.pauseVideo();
             doNotDisplay = true;
         }
-            else if (text === '/r/') {
+        else if (command === COMMAND.RESUME) {
                 player.playVideo();
                 doNotDisplay = true;
         }
