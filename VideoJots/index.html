@@ -46,7 +46,15 @@
                         <textarea id="txtSource"></textarea>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="slashlog">
-                        Formatting rules:
+                        Formatting rules:<br/>
+                        /p/-pause<br/>
+                        /r/-resume<br/>
+                        /-5/-rewind 5 seconds<br/>
+                        /10/-forward 10 seconds<br/>
+                        /tag/-open new tag element<br/>
+                        //-close currently open tag<br/>
+                        /name/text/-creates a new element with value name and content text. Equivalent to &lt;name&gt;text&lt;/name&gt;<br/>
+                        /now/-creates a time placeholder which will be used for the next note
                     </div>
                 </div>
             </div>
@@ -58,7 +66,8 @@
     <div class="col-md-8">
         <div class="form-group">
             <label for="comment">Notes:</label>
-            <input type="text" class="form-control" id="tbNotes" onkeypress="return runScript(event)">
+            <input type="text" class="form-control" id="tbNotes" onkeypress=" return keyPressEvent(event) " onkeyup="return keyUpEvent(event)">
+            <span id="spnAlert" class="label label-danger"></span>
         </div>
     </div>
     <div class="col-md-3">

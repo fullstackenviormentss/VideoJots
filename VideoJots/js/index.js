@@ -1,5 +1,6 @@
 ﻿$(function() {
     window.tagArray = [];
+    window.textSource = '';
 });
 
 function loadVideo(e) {
@@ -22,13 +23,53 @@ function clearPage() {
     $("#tbNotes").html('');
 }
 
-function runScript(e) {
+function convertSourceToOutput(sourceText)
+{
+    
+}
+
+function keyUpEvent(e) {
+    var tb = document.getElementById("tbNotes");
+    var text = tb.value;
+    if (text === '/p/') {
+        $("#spnAlert").text('Pause');
+    }
+    else if (text === '/r/') {
+        $("#spnAlert").text('Resume');
+    } else if (text.charAt(0) === '/' && text.charAt(text.length - 1) === '/') {
+            //rewind if - number
+            //forward if + number
+            var inside = text.substring(1, text.length - 1);
+            var rewind = TryParseInt(inside, null);
+            if (rewind) {
+                if (rewind > 0) {
+                    $("#spnAlert").text('Forward ' + rewind + ' seconds');
+                } else {
+                    $("#spnAlert").text('Back ' + Math.abs(rewind) + ' seconds');
+                }
+            } 
+        }
+    else {
+        $("#spnAlert").text('');
+    }
+    return false;
+}
+
+function addToSource(text) {
+    window.textSource += '{|' + text + '|}';
+    $("#txtSource").text(window.textSource);
+}
+
+function keyPressEvent(e) {
+    var tb = document.getElementById("tbNotes");
+    var text = tb.value;
+    
     if (e.keyCode === 13) {
-        var tb = document.getElementById("tbNotes");
+        
         //process
         var pnl = document.getElementById("pnlNotes");
         //pnl.value += tb.value;
-        var text = tb.value;
+        
         var doNotDisplay = false;
         if (text === '//') {
             //pop last tag from array
