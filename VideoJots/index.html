@@ -8,81 +8,90 @@
     <script src="js/index.js"></script>
 </head>
 <body>
-<!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-<div class="row">
-    <div class="col-md-1"></div>
-    <div class="col-md-8">
-        <input type="text" class="form-control" id="tbURL" onkeypress="return loadVideo(event)">
-    </div>
-    <div class="col-md-3">
-        <button type="button" class="btn btn-primary" onclick=" loadVideoURL()">Play</button>
-    </div>
-</div>
-    
-<div class="row">
-    <div class="col-md-1"></div>
-    <div class="col-md-8">
-        <div id="player"></div>
-    </div>
-    <div class="col-md-3">
-        <div style="height: 400px;width: 95%" class="panel panel-default">
-            <div class="panel-heading">Source</div>
-            <div role="tabpanel">
+<div role="tabpanel">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#editor" aria-controls="editor" role="tab" data-toggle="tab">Editor</a></li>
+        <li role="presentation"><a href="#viewoutput" aria-controls="viewoutput" role="tab" data-toggle="tab">View Output</a></li>
+    </ul>
 
-                <!-- Nav tabs -->
-                <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#output" aria-controls="output" role="tab" data-toggle="tab">Output</a></li>
-                    <li role="presentation"><a href="#source" aria-controls="source" role="tab" data-toggle="tab">Source</a></li>
-                    <li role="presentation"><a href="#slashlog" aria-controls="formatting" role="tab" data-toggle="tab">SlashLog</a></li>
-                </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="editor">
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control" id="tbURL" onkeypress=" return loadVideo(event) ">
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-primary" onclick=" loadVideoURL() ">Play</button>
+                </div>
+            </div>
 
-                <!-- Tab panes -->
-                <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="output">
-                        <div class="panel-body" id="pnlNotes">
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-8">
+                    <div id="player"></div>
+                    <div class="form-group">
+                        <div id="tagArray"></div>
+                        <label for="comment">Notes:</label>
+                        <input type="text" class="form-control" id="tbNotes" onkeypress=" return keyPressEvent(event) " onkeyup=" return keyUpEvent(event) ">
+                        <span id="spnAlert" class="label label-danger"></span><br />
+                        <span id="spnNextJot" class="label label-warning"></span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div style="height: 350px; width: 95%" class="panel panel-default">
+                        <div class="panel-heading">Source</div>
+                        <div role="tabpanel">
 
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#source" aria-controls="source" role="tab" data-toggle="tab">Source</a></li>
+                                <li role="presentation"><a href="#raw" aria-controls="raw" role="tab" data-toggle="tab">Raw</a></li>
+                                <li role="presentation"><a href="#slashcode" aria-controls="slashcode" role="tab" data-toggle="tab">SlashCode</a></li>
+                            </ul>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="source">
+
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="raw">
+                                    <textarea id="txtSource" style="width: 90%;height: 90%"></textarea>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="slashcode">
+                                    Formatting rules:<br />
+                                    /p/-pause<br />
+                                    /r/-resume<br />
+                                    /-5/-rewind 5 seconds<br />
+                                    /10/-forward 10 seconds<br />
+                                    /tag/-open new tag element<br />
+                                    //-close currently open tag<br />
+                                    /name/text/-creates a new element with value name and content text. Equivalent to &lt;name&gt;text&lt;/name&gt;<br />
+                                    /now/-creates a time placeholder which will be used for the next note
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="source">
-                        <textarea id="txtSource"></textarea>
+
+                    <div style="height: 300px; width: 95%" class="panel panel-default">
+                        <div class="panel-heading">Output</div>
+                        <div class="panel-body" id="pnlNotes">
+                        </div>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="slashlog">
-                        Formatting rules:<br />
-                        /p/-pause<br />
-                        /r/-resume<br />
-                        /-5/-rewind 5 seconds<br />
-                        /10/-forward 10 seconds<br />
-                        /tag/-open new tag element<br />
-                        //-close currently open tag<br />
-                        /name/text/-creates a new element with value name and content text. Equivalent to &lt;name&gt;text&lt;/name&gt;<br />
-                        /now/-creates a time placeholder which will be used for the next note
-                    </div>
+
                 </div>
             </div>
         </div>
-
-        <div style="height: 300px;width: 95%" class="panel panel-default">
-            <div class="panel-heading">Output</div>
-            <div class="panel-body">Output Panel</div>
+        <div role="tabpanel" class="tab-pane" id="viewoutput">
+            
         </div>
         
     </div>
 </div>
-<div class="row">
-    <div class="col-md-1"></div>
-    <div class="col-md-8">
-        <div class="form-group">
-            <label for="comment">Notes:</label>
-            <input type="text" class="form-control" id="tbNotes" onkeypress=" return keyPressEvent(event) " onkeyup="return keyUpEvent(event)">
-            <span id="spnAlert" class="label label-danger"></span><br/>
-            <span id="spnNextJot" class="label label-warning"></span>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div id="tagArray"></div>
-    </div>
-</div>
-    
+
+<!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+
+
 <script>
     // 2. This code loads the IFrame Player API code asynchronously.
     var tag = document.createElement('script');
@@ -99,7 +108,7 @@
         player = new YT.Player('player', {
             height: '600',
             width: '1000',
-            videoId: 'EEv_hNGTUMc',
+            videoId: '_PwhiWxHK8o',
             events: {
                 'onReady': onPlayerReady,
                 'onStateChange': onPlayerStateChange

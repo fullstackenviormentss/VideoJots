@@ -56,9 +56,18 @@ function clearPage() {
     isClear = true;
 }
 
-function convertSourceToOutput(sourceText)
-{
-    
+function convertSourceToOutput(sourceText) {
+    var allText = sourceText;
+    var lines = allText.split("{|");
+    var html = '';
+    $.each(lines, function (index, value) {
+        if (value.trim() !== '') {
+            var location = parseFloat(value.split("|")[0]);
+            var lineText = value.split("|")[1].split("|}")[0];
+            html += lineText;
+        }
+    });
+    return html;
 }
 
 function keyUpEvent(e) {
@@ -169,8 +178,10 @@ function keyPressEvent(e) {
             }
         }
         if (!doNotDisplay && textToDisplay.trim() !== '') {
-            $("#pnlNotes").append('<br/>' + textToDisplay);
             addToSource(htmlEncode(sourceText), window.currPosition);
+            var output = convertSourceToOutput($("#txtSource").text());
+            $("#pnlNotes").html(output);
+            $("#viewoutput").html(output);
         }
         tb.value = '';
         isClear = true;
