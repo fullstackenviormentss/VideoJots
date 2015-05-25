@@ -8,7 +8,7 @@
     <script src="js/index.js"></script>
 </head>
 <body>
-<div role="tabpanel">
+<div role="tabpanel" style="width: 97%;">
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active"><a href="#editor" aria-controls="editor" role="tab" data-toggle="tab">Editor</a></li>
         <li role="presentation"><a href="#viewoutput" aria-controls="viewoutput" role="tab" data-toggle="tab">View Output</a></li>
@@ -17,28 +17,28 @@
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="editor">
             <div class="row">
-                <div class="col-md-1"></div>
+                
                 <div class="col-md-8">
                     <input type="text" class="form-control" id="tbURL" onkeypress=" return loadVideo(event) ">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <button type="button" class="btn btn-primary" onclick=" loadVideoURL() ">Play</button>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-1"></div>
+                
                 <div class="col-md-8">
-                    <div id="player"></div>
-                    <div class="form-group">
-                        <div id="tagArray"></div>
+                    <div style="width: 97%;" id="player"></div>
+                    <div style="width: 97%;" class="form-group">
+                        <div id="tagArray">&nbsp;</div>
                         <label for="comment">Notes:</label>
                         <input type="text" class="form-control" id="tbNotes" onkeypress=" return keyPressEvent(event) " onkeyup=" return keyUpEvent(event) ">
                         <span id="spnAlert" class="label label-danger"></span><br />
                         <span id="spnNextJot" class="label label-warning"></span>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div style="height: 350px; width: 95%" class="panel panel-default">
                         <div class="panel-heading">Source</div>
                         <div role="tabpanel">
@@ -68,6 +68,7 @@
                                     //-close currently open tag<br />
                                     /name/text/-creates a new element with value name and content text. Equivalent to &lt;name&gt;text&lt;/name&gt;<br />
                                     /now/-creates a time placeholder which will be used for the next note
+                                    <textarea id="txtCSS" style="width: 95%;"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -106,7 +107,7 @@
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-            height: '600',
+            height: '570',
             width: '1000',
             videoId: '_PwhiWxHK8o',
             events: {

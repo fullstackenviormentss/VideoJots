@@ -60,13 +60,36 @@ function convertSourceToOutput(sourceText) {
     var allText = sourceText;
     var lines = allText.split("{|");
     var html = '';
+    var htmlPre = '<span>';
+    var startScopedStyle = '<style scoped>';
+    var style = $("#txtCSS").val();
+    var endScopedStyle = '</style>';
+    var htmlPost = '</span>';
+    var htmlFromSource = '';
     $.each(lines, function (index, value) {
         if (value.trim() !== '') {
             var location = parseFloat(value.split("|")[0]);
             var lineText = value.split("|")[1].split("|}")[0];
-            html += lineText;
+            var htmlRaw = lineText;
+            if (lineText === '/n/') {
+                htmlRaw = '<br/>';
+            }
+            else if (lineText.charAt(0)==='/'&&lineText.charAt(lineText.length-1)==='/') {
+                var insideText = lineText.substring(1, lineText.length - 2);
+                var tagName = insideText;
+                var tagValue = '';
+                if (insideText.indexOf('/') > -1) {
+                    tagName = insideText.split('/')[0];
+                    var tagValue = insideText.split('/')[1];
+                    htmlRaw = '<span class="' + tagName + '">'+tagValue+'</span>';
+                } else {
+                    htmlRaw = '<span class="' + tagName + '">';
+                }
+            }
+            htmlFromSource += htmlRaw;
         }
     });
+    html = htmlPre + startScopedStyle + style + endScopedStyle + htmlFromSource + htmlPost;
     return html;
 }
 
@@ -154,6 +177,9 @@ function keyPressEvent(e) {
                 player.playVideo();
                 doNotDisplay = true;
         }
+        else if (command === COMMAND.NEWLINE) {
+            
+        }
         else {
             if (text.charAt(0) === '/' && text.charAt(text.length - 1) === '/') {
                 //rewind if - number
@@ -171,7 +197,7 @@ function keyPressEvent(e) {
                         textToDisplay = tagValue;
                     } else {
                         window.tagArray.push(tagName);
-                        textToDisplay = '';
+                        //textToDisplay = '';
                     }
                     displayTagArray();
                 }
@@ -198,7 +224,7 @@ Array.prototype.remove = function (from, to) {
 };
 
 function displayTagArray() {
-    $("#tagArray").html('');
+    $("#tagArray").html('&nbsp;');
     $.each(window.tagArray, function(index, value) {
         $("#tagArray").append(value+' > ');
     });
