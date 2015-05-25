@@ -2,11 +2,13 @@
 var S_RESUME = '/r/';
 var S_NEWLINE = '/n/';
 var S_POP = '//';
+var isClear = true;
 
 var CMDTEXT={};
 CMDTEXT[S_PAUSE] = 'Pause';
 CMDTEXT[S_RESUME] = 'Resume';
 CMDTEXT[S_NEWLINE] = 'Next line';
+CMDTEXT[S_POP] = 'Close last open tag';
 
 var COMMAND= {
     PAUSE: "pause",
@@ -20,6 +22,18 @@ $(function () {
     window.tagArray = [];
     window.textSource = '';
 });
+
+//Source: http://stackoverflow.com/questions/1219860/html-encoding-in-javascript-jquery
+
+function htmlEncode(value) {
+    //create a in-memory div, set it's inner text(which jQuery automatically encodes)
+    //then grab the encoded contents back out.  The div never exists on the page.
+    return $('<div/>').text(value).html();
+}
+
+function htmlDecode(value) {
+    return $('<div/>').html(value).text();
+}
 
 function loadVideo(e) {
     if (e.keyCode === 13) {
@@ -39,6 +53,7 @@ function clearPage() {
     $("#pnlNotes").html('');
     $("#txtSource").text('');
     $("#tbNotes").html('');
+    isClear = true;
 }
 
 function convertSourceToOutput(sourceText)
@@ -49,14 +64,23 @@ function convertSourceToOutput(sourceText)
 function keyUpEvent(e) {
     var tb = document.getElementById("tbNotes");
     var text = tb.value;
-    if (text === S_PAUSE) {
+    if (text.length === 1 && isClear) {
+        window.currPosition = player.getCurrentTime();
+        $("#spnNextJot").text('Next jot at position ' + window.currPosition + ' s');
+        isClear = false;
+    }
+    var command = getCommand(text);
+    if (command === COMMAND.PAUSE) {
         $("#spnAlert").text(CMDTEXT[S_PAUSE]);
     }
-    else if (text === S_RESUME) {
+    else if (command === COMMAND.RESUME) {
         $("#spnAlert").text(CMDTEXT[S_RESUME]);
     }
-    else if (text === S_NEWLINE) {
+    else if (command === COMMAND.NEWLINE) {
         $("#spnAlert").text(CMDTEXT[S_NEWLINE]);
+    }
+        else if (command === COMMAND.POP) {
+        $("#spnAlert").text(CMDTEXT[S_POP]);
     }
     else if (text.charAt(0) === '/' && text.charAt(text.length - 1) === '/') {
             //rewind if - number
@@ -94,15 +118,16 @@ function getCommand(text) {
     return command;
 }
 
-function addToSource(text) {
-    window.textSource += '{|' + text + '|}';
+function addToSource(text, position) {
+    window.textSource += '{|'+position+'|' + text + '|}';
     $("#txtSource").text(window.textSource);
 }
 
 function keyPressEvent(e) {
     var tb = document.getElementById("tbNotes");
     var text = tb.value;
-    
+    var textToDisplay = text;
+    var sourceText = text;
     if (e.keyCode === 13) {
         var pnl = document.getElementById("pnlNotes");
         var command = getCommand(text);
@@ -127,20 +152,29 @@ function keyPressEvent(e) {
                 var inside = text.substring(1, text.length - 1);
                 var rewind = TryParseInt(inside, null);
                 if (rewind) {
-                    //var ytplayer = document.getElementById('player');
-                    //ytplayer.seekTo(ytplayer.getCurrentTime() + rewind);
                     player.seekTo(player.getCurrentTime() + rewind);
                     doNotDisplay = true;
                 } else {
-                    window.tagArray.push(inside);
+                    var tagName = inside;
+                    if (inside.indexOf('/') > -1) {
+                        //a closed, but filled out tag
+                        var tagValue = inside.substring(inside.indexOf('/') + 1);
+                        textToDisplay = tagValue;
+                    } else {
+                        window.tagArray.push(tagName);
+                        textToDisplay = '';
+                    }
                     displayTagArray();
                 }
             }
         }
-        if (!doNotDisplay) {
-            $("#pnlNotes").append('<br/>' + tb.value);
+        if (!doNotDisplay && textToDisplay.trim() !== '') {
+            $("#pnlNotes").append('<br/>' + textToDisplay);
+            addToSource(htmlEncode(sourceText), window.currPosition);
         }
         tb.value = '';
+        isClear = true;
+        $("#spnNextJot").text('');
         return false;
     }
 }
@@ -155,7 +189,7 @@ Array.prototype.remove = function (from, to) {
 function displayTagArray() {
     $("#tagArray").html('');
     $.each(window.tagArray, function(index, value) {
-        $("#tagArray").append(value+'<br/>');
+        $("#tagArray").append(value+' > ');
     });
 }
 
