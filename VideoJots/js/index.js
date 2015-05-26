@@ -49,6 +49,14 @@ function loadVideoURL() {
     clearPage();
 }
 
+function escapeRegExp(string) {
+    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}
+
+function replaceAll(string, find, replace) {
+    return string.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+}
+
 function clearPage() {
     $("#pnlNotes").html('');
     $("#txtSource").text('');
@@ -75,17 +83,18 @@ function convertSourceToOutput(sourceText) {
                 htmlRaw = '<br/>';
             }
             else if (lineText.charAt(0)==='/'&&lineText.charAt(lineText.length-1)==='/') {
-                var insideText = lineText.substring(1, lineText.length - 2);
+                var insideText = lineText.substring(1, lineText.length - 1);
                 var tagName = insideText;
                 var tagValue = '';
                 if (insideText.indexOf('/') > -1) {
                     tagName = insideText.split('/')[0];
-                    var tagValue = insideText.split('/')[1];
+                    tagValue = insideText.split('/')[1];
                     htmlRaw = '<span class="' + tagName + '">'+tagValue+'</span>';
                 } else {
                     htmlRaw = '<span class="' + tagName + '">';
                 }
             }
+            htmlRaw = replaceAll(htmlRaw, '/n/', '<br/>');
             htmlFromSource += htmlRaw;
         }
     });
@@ -93,9 +102,25 @@ function convertSourceToOutput(sourceText) {
     return html;
 }
 
+String.prototype.endsWith = function (suffix) {
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
+
+String.prototype.replaceAt = function (index, character) {
+    return this.substr(0, index) + character + this.substr(index + character.length);
+}
+
 function keyUpEvent(e) {
     var tb = document.getElementById("tbNotes");
     var text = tb.value;
+    if (text.endsWith('/pause/')) {
+        player.pauseVideo();
+        tb.value = text.slice(0, -7);
+    }
+    if (text.endsWith('/resume/')) {
+        player.playVideo();
+        tb.value = text.slice(0, -8);
+    }
     if (text.length === 1 && isClear) {
         window.currPosition = player.getCurrentTime();
         $("#spnNextJot").text('Next jot at position ' + window.currPosition + ' s');
@@ -161,7 +186,6 @@ function keyPressEvent(e) {
     var textToDisplay = text;
     var sourceText = text;
     if (e.keyCode === 13) {
-        var pnl = document.getElementById("pnlNotes");
         var command = getCommand(text);
         var doNotDisplay = false;
         if (command === COMMAND.POP) {
@@ -179,6 +203,24 @@ function keyPressEvent(e) {
         }
         else if (command === COMMAND.NEWLINE) {
             
+        }
+        else if (text.charAt(0) === '/' && text.charAt(text.length - 1) !== '/') {
+            var nonSlashFound = false;
+            sourceText = text;
+            var slashString = '';
+            var numSlashes = 0;
+            for (var i = 0; i < text.length; i++) {
+                if (text.charAt(i) === '/') {
+                    if (!nonSlashFound) {
+                        slashString += '/n/';
+                        numSlashes += 1;
+                    }
+                } else {
+                    nonSlashFound = true;
+                }
+            }
+            sourceText = slashString + text.substring(numSlashes, text.length);
+            //sourceText = '/n/'+ text.substring(1, text.length);
         }
         else {
             if (text.charAt(0) === '/' && text.charAt(text.length - 1) === '/') {
