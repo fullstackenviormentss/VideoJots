@@ -21,6 +21,25 @@ var COMMAND= {
 $(function () {
     window.tagArray = [];
     window.textSource = '';
+    $(".resizable")
+      .wrap('<div/>')
+        .css({ 'overflow': 'hidden' })
+          .parent()
+            .css({
+                'display': 'inline-block',
+                'overflow': 'hidden',
+                'height': function () { return $('.resizable', this).height(); },
+                'width': function () { return $('.resizable', this).width(); },
+                'paddingBottom': '12px',
+                'paddingRight': '12px'
+
+            }).resizable()
+                    .find('.resizable')
+                      .css({
+                          overflow: 'auto',
+                          width: '100%',
+                          height: '100%'
+                      });
 });
 
 //Source: http://stackoverflow.com/questions/1219860/html-encoding-in-javascript-jquery
@@ -29,6 +48,10 @@ function htmlEncode(value) {
     //create a in-memory div, set it's inner text(which jQuery automatically encodes)
     //then grab the encoded contents back out.  The div never exists on the page.
     return $('<div/>').text(value).html();
+}
+
+function getVideoIDFromURL(url) {
+    return url.split('v=')[1].split('&')[0];
 }
 
 function htmlDecode(value) {
@@ -64,13 +87,21 @@ function clearPage() {
     isClear = true;
 }
 
-function convertSourceToOutput(sourceText) {
+function convertSourceToOutput(sourceText, includeVideo) {
+    var playerHTML = '';
+    if (includeVideo) {
+        var videoID = getVideoIDFromURL(player.getVideoUrl());
+        var scriptHTML = '<div id="player"></div><script>var tag=document.createElement("script");tag.src="https://www.youtube.com/iframe_api";var firstScriptTag=document.getElementsByTagName("script")[0];firstScriptTag.parentNode.insertBefore(tag,firstScriptTag);var player;function onYouTubeIframeAPIReady(){player=new YT.Player("player",{height:"390",width:"640",videoId:"' + videoID + '",playerVars:{autostart:0,autoplay:0,controls:1},events:{onReady:onPlayerReady,onStateChange:onPlayerStateChange}})}function onPlayerReady(a){}var done=!1;function onPlayerStateChange(a){}function playVideo(){player.playVideo()}function pauseVideo(){player.pauseVideo()}function stopVideo(){player.stopVideo()}function loadVideoById(a){player.loadVideoById(a,0,"large")}function playVideoAt(pos){player.seekTo(parseFloat(pos))};</script>';
+        var htmlInfo = '<br/><b>Click on text below to jump to specific point in the video</b>';
+        playerHTML = scriptHTML+htmlInfo;
+    }
     var allText = sourceText;
     var lines = allText.split("{|");
     var html = '';
     var htmlPre = '<span>';
     var startScopedStyle = '<style scoped>';
-    var style = $("#txtCSS").val();
+    var clickableStyle = '.clickable{cursor:pointer;cursor:hand;}.clickable:hover{background:yellow;}';
+    var style = clickableStyle+ $("#txtCSS").val();
     var endScopedStyle = '</style>';
     var htmlPost = '</span>';
     var htmlFromSource = '';
@@ -95,10 +126,11 @@ function convertSourceToOutput(sourceText) {
                 }
             }
             htmlRaw = replaceAll(htmlRaw, '/n/', '<br/>');
-            htmlFromSource += htmlRaw;
+            htmlFromSource += '<span class="clickable" onclick="playVideoAt('+location+')">'+ htmlRaw+'</span>';
         }
     });
-    html = htmlPre + startScopedStyle + style + endScopedStyle + htmlFromSource + htmlPost;
+    htmlFromSource = '<div style="height:300px;overflow:auto" class="resizable">' + htmlFromSource + '</div>';
+    html = htmlPre + playerHTML+ startScopedStyle + style + endScopedStyle + htmlFromSource + htmlPost;
     return html;
 }
 
@@ -113,13 +145,13 @@ String.prototype.replaceAt = function (index, character) {
 function keyUpEvent(e) {
     var tb = document.getElementById("tbNotes");
     var text = tb.value;
-    if (text.endsWith('/pause/')) {
+    if (text.endsWith('/p//')) {
         player.pauseVideo();
-        tb.value = text.slice(0, -7);
+        tb.value = text.slice(0, -4);
     }
-    if (text.endsWith('/resume/')) {
+    if (text.endsWith('/r//')) {
         player.playVideo();
-        tb.value = text.slice(0, -8);
+        tb.value = text.slice(0, -4);
     }
     if (text.length === 1 && isClear) {
         window.currPosition = player.getCurrentTime();
@@ -247,9 +279,11 @@ function keyPressEvent(e) {
         }
         if (!doNotDisplay && textToDisplay.trim() !== '') {
             addToSource(htmlEncode(sourceText), window.currPosition);
-            var output = convertSourceToOutput($("#txtSource").text());
+            var output = convertSourceToOutput($("#txtSource").text(), false);
+            var outputWithPlayer = convertSourceToOutput($("#txtSource").text(), true);
             $("#pnlNotes").html(output);
             $("#viewoutput").html(output);
+            $("#txtOutputHTML").text(outputWithPlayer);
         }
         tb.value = '';
         isClear = true;
