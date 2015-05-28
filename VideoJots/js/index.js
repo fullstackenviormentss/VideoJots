@@ -103,7 +103,7 @@ function convertSourceToOutput(sourceText, includeVideo) {
     var clickableStyle = '.clickable{cursor:pointer;cursor:hand;}.clickable:hover{background:yellow;}';
     var style = clickableStyle+ $("#txtCSS").val();
     var endScopedStyle = '</style>';
-    var footer = '<br/><span style="font-size:xx-small;">Video outline created using <a href="http://thesoonerdev.github.io/videojots/">VideoJots</a><span><br/>';
+    var footer = '<br/><span style="font-size:xx-small;">Video outline created using <a target="_blank" href="http://thesoonerdev.github.io/videojots/">VideoJots</a><span><br/>';
     var htmlPost = '</span>';
     var htmlFromSource = '';
     $.each(lines, function (index, value) {
@@ -130,8 +130,8 @@ function convertSourceToOutput(sourceText, includeVideo) {
             htmlFromSource += '<span class="clickable" onclick="playVideoAt('+location+')">'+ htmlRaw+'</span>';
         }
     });
-    htmlFromSource = '<div style="height:300px;overflow:auto" class="resizable">' + htmlFromSource + '</div>';
-    html = htmlPre + playerHTML+ startScopedStyle + style + endScopedStyle + htmlFromSource + footer+ htmlPost;
+    htmlFromSource = '<div style="height:300px;overflow:auto" class="resizable">' + htmlFromSource + footer+'</div>';
+    html = htmlPre + playerHTML+ startScopedStyle + style + endScopedStyle + htmlFromSource + htmlPost;
     return html;
 }
 
