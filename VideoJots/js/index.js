@@ -21,25 +21,10 @@ var COMMAND= {
 $(function () {
     window.tagArray = [];
     window.textSource = '';
-    $(".resizable")
-      .wrap('<div/>')
-        .css({ 'overflow': 'hidden' })
-          .parent()
-            .css({
-                'display': 'inline-block',
-                'overflow': 'hidden',
-                'height': function () { return $('.resizable', this).height(); },
-                'width': function () { return $('.resizable', this).width(); },
-                'paddingBottom': '12px',
-                'paddingRight': '12px'
-
-            }).resizable()
-                    .find('.resizable')
-                      .css({
-                          overflow: 'auto',
-                          width: '100%',
-                          height: '100%'
-                      });
+    $('#txtSource').bind('input propertychange', function () {
+        window.textSource = $("#txtSource").val();
+        updateOutput();
+    });
 });
 
 //Source: http://stackoverflow.com/questions/1219860/html-encoding-in-javascript-jquery
@@ -210,7 +195,7 @@ function getCommand(text) {
 
 function addToSource(text, position) {
     window.textSource += '{|'+position+'|' + text + '|}';
-    $("#txtSource").text(window.textSource);
+    $("#txtSource").val(window.textSource);
 }
 
 function keyPressEvent(e) {
@@ -280,17 +265,21 @@ function keyPressEvent(e) {
         }
         if (!doNotDisplay && textToDisplay.trim() !== '') {
             addToSource(htmlEncode(sourceText), window.currPosition);
-            var output = convertSourceToOutput($("#txtSource").text(), false);
-            var outputWithPlayer = convertSourceToOutput($("#txtSource").text(), true);
-            $("#pnlNotes").html(output);
-            $("#viewoutput").html(output);
-            $("#txtOutputHTML").text(outputWithPlayer);
+            updateOutput();
         }
         tb.value = '';
         isClear = true;
         $("#spnNextJot").text('');
         return false;
     }
+}
+
+function updateOutput() {
+    var output = convertSourceToOutput($("#txtSource").val(), false);
+    var outputWithPlayer = convertSourceToOutput($("#txtSource").val(), true);
+    $("#pnlNotes").html(output);
+    $("#viewoutput").html(output);
+    $("#txtOutputHTML").text(outputWithPlayer);
 }
 
 // Array Remove - By John Resig (MIT Licensed)
