@@ -99,17 +99,27 @@ function convertSourceToOutput(sourceText, includeVideo, divHeight) {
             if (lineText === '/n/') {
                 htmlRaw = '<br/>';
             }
-            else if (lineText.charAt(0)==='/'&&lineText.charAt(lineText.length-1)==='/') {
+            else if (lineText.charAt(0) === '/' && lineText.charAt(lineText.length - 1) === '/' && lineText.indexOf(' ')===-1) {
                 var insideText = lineText.substring(1, lineText.length - 1);
                 var tagName = insideText;
                 var tagValue = '';
                 if (insideText.indexOf('/') > -1) {
                     tagName = insideText.split('/')[0];
                     tagValue = insideText.split('/')[1];
-                    htmlRaw = '<span class="' + tagName + '">'+tagValue+'</span>';
+                    htmlRaw = '<span class="' + tagName + '">' + tagValue + '</span>';
                 } else {
                     htmlRaw = '<span class="' + tagName + '">';
                 }
+            } else {
+                var boldRegexp = /\/b\/([^\/]*)\//g;
+                lineText = lineText.replace(boldRegexp, '<b>$1</b>');
+                var italicRegexp = /\/i\/([^\/]*)\//g;
+                lineText = lineText.replace(italicRegexp, '<i>$1</i>');
+                var underlineRegexp = /\/u\/([^\/]*)\//g;
+                lineText = lineText.replace(underlineRegexp, '<ins>$1</ins>');
+                var strikethroughRegexp = /\/s\/([^\/]*)\//g;
+                lineText = lineText.replace(strikethroughRegexp, '<del>$1</del>');
+                htmlRaw = lineText;
             }
             htmlRaw = replaceAll(htmlRaw, '/n/', '<br/>');
             htmlFromSource += '<span class="clickable" onclick="playVideoAt('+location+')">'+ htmlRaw+'</span>';
