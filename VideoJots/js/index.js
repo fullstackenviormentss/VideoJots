@@ -33,6 +33,17 @@ $(function () {
         window.textSource = $("#txtSource").val();
         updateOutput();
     });
+    $(function () {
+        $("#playerBox").resizable({
+            handles: {
+                'se':'#segrip'
+            }
+        });
+        $("#playerBox").resize(function() {
+            $("#player").height($("#playerBox").height());
+            $("#player").width($("#playerBox").width());
+        });
+    });
 });
 
 //Source: http://stackoverflow.com/questions/1219860/html-encoding-in-javascript-jquery
@@ -96,7 +107,7 @@ function convertSourceToOutput(sourceText, includeVideo, divHeight) {
     var clickableStyle = '.clickable{cursor:pointer;cursor:hand;}.clickable:hover{background:yellow;} ';
     var style = clickableStyle+ $("#txtCSS").val();
     var endScopedStyle = '</style>';
-    var footer = '<br/><span style="font-size:xx-small;">Video outline created using <a target="_blank" href="http://thesoonerdev.github.io/videojots/">VideoJots</a><span><br/>';
+    var footer = '<br/><span style="font-size:xx-small;">Video outline created using <a target="_blank" href="http://thesoonerdev.github.io/videojots/">VideoJots</a></span><br/>';
     var htmlPost = '</span>';
     var htmlFromSource = '';
     $.each(lines, function (index, value) {
@@ -138,12 +149,18 @@ function convertSourceToOutput(sourceText, includeVideo, divHeight) {
                 htmlRaw = lineText;
             }
             htmlRaw = replaceAll(htmlRaw, '/n/', '<br/>');
-            htmlFromSource += '<span class="clickable" onclick="playVideoAt('+location+')">'+ htmlRaw+'</span>';
+            var prefix = '<span class="clickable" onclick="playVideoAt(' + location + ')">';
+            var suffix = '</span>';
+            if (htmlRaw.startsWith('<span class=')) {
+                prefix = '';
+                suffix = '';
+            }
+            htmlFromSource += prefix + htmlRaw + suffix;
         }
     });
     var styleAttr = '';
     if (divHeight > 0) {
-        styleAttr = 'style="height:' + divHeight + ';overflow-y:auto"';
+        styleAttr = 'style="height:' + divHeight + 'px;overflow-y:auto"';
     }
     htmlFromSource = '<div '+styleAttr+' class="resizable"><br/>' + htmlFromSource + footer+'</div>';
     html = htmlPre + playerHTML+ startScopedStyle + style + endScopedStyle + htmlFromSource + htmlPost;
@@ -155,6 +172,12 @@ function getRulesFromText(cssRulesText) {
     styleElement.textContent = cssRulesText;
     doc.body.appendChild(styleElement);
     return styleElement.sheet.cssRules;
+}
+
+if (typeof String.prototype.startsWith != 'function') {
+    String.prototype.startsWith = function (str) {
+        return this.slice(0, str.length) == str;
+    };
 }
 
 String.prototype.endsWith = function (suffix) {
@@ -246,13 +269,15 @@ function keyPressEvent(e) {
     var text = tb.value;
     var textToDisplay = text;
     var sourceText = text;
+    var encodedText = htmlEncode(sourceText);
     if (e.keyCode === 13) {
         var command = getCommand(text);
         var doNotDisplay = false;
         if (command === COMMAND.POP) {
             //pop last tag from array
             window.tagArray.remove(window.tagArray.length - 1);
-            doNotDisplay = true;
+            encodedText = '</span>';
+            //doNotDisplay = true;
             displayTagArray();
         } else if (command === COMMAND.PAUSE) {
             player.pauseVideo();
@@ -267,7 +292,7 @@ function keyPressEvent(e) {
         }
         else if (text.charAt(0) === '/' && text.charAt(text.length - 1) !== '/') {
             var nonSlashFound = false;
-            sourceText = text;
+            sourceText = htmlEncode(text);
             var slashString = '';
             var numSlashes = 0;
             for (var i = 0; i < text.length; i++) {
@@ -280,7 +305,7 @@ function keyPressEvent(e) {
                     nonSlashFound = true;
                 }
             }
-            sourceText = slashString + text.substring(numSlashes, text.length);
+            encodedText = slashString + htmlEncode(text.substring(numSlashes, text.length));
             //sourceText = '/n/'+ text.substring(1, text.length);
         }
         else {
@@ -296,18 +321,21 @@ function keyPressEvent(e) {
                     var tagName = inside;
                     if (inside.indexOf('/') > -1) {
                         //a closed, but filled out tag
+                        var tag = inside.substring(0, inside.indexOf('/'));
                         var tagValue = inside.substring(inside.indexOf('/') + 1);
                         textToDisplay = tagValue;
+                        //sourceText = '<' + tag + '>' + tagValue + '</' + tag + '>';
+                        encodedText = '<span class="' + tag + '">' + htmlEncode(tagValue) + '</span>';
                     } else {
                         window.tagArray.push(tagName);
-                        //textToDisplay = '';
+                        encodedText = '<span class="' + tagName + '">';
                     }
                     displayTagArray();
                 }
             }
         }
-        if (!doNotDisplay && textToDisplay.trim() !== '') {
-            addToSource(htmlEncode(sourceText), window.currPosition);
+        if (!doNotDisplay && encodedText.trim() !== '') {
+            addToSource(encodedText, window.currPosition);
             updateOutput();
         }
         tb.value = '';
@@ -324,17 +352,6 @@ function updateOutput() {
     $("#viewoutput").html(output);
     $("#txtOutputHTML").text(outputWithPlayer);
     $("#pnlNotes").scrollTop($("#pnlNotes")[0].scrollHeight);
-    if ($("#txtReplace").val().length > 0) {
-        var replacements = $("#txtReplace").val().split(';');
-        var spnReplacementHtml = '';
-        for (var i = 0; i < replacements.length; i++) {
-            var item = replacements[i];
-            if (item) {
-                spnReplacementHtml += item.split(',')[0] + ' = ' + item.split(',')[1] + '<br/>';
-            }
-        }
-        $("#spnReplacements").html(spnReplacementHtml);
-    }
 }
 
 // Array Remove - By John Resig (MIT Licensed)

@@ -62,6 +62,7 @@
     <Content Include="js\impress.js" />
     <Content Include="js\index.js" />
     <Content Include="js\jquery-2.1.1.min.js" />
+    <Content Include="js\jquery-ui.js" />
     <Content Include="js\jquery.js" />
     <Content Include="libEGL.dll" />
     <Content Include="libGLESv2.dll" />
@@ -69,6 +70,7 @@
     <Content Include="nw.exe" />
     <Content Include="presentation.html" />
     <Content Include="styles.css" />
+    <Content Include="test.html" />
     <Content Include="transcript.js" />
     <Content Include="videoexample.html" />
   </ItemGroup>
