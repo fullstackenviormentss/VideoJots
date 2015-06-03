@@ -33,18 +33,30 @@ $(function () {
         window.textSource = $("#txtSource").val();
         updateOutput();
     });
-    $(function () {
-        $("#playerBox").resizable({
-            handles: {
-                'se':'#segrip'
-            }
-        });
-        $("#playerBox").resize(function() {
-            $("#player").height($("#playerBox").height());
-            $("#player").width($("#playerBox").width());
-        });
+    $("#playerBox").resizable({
+        handles: {
+            'se': '#segrip'
+        }
     });
+    $("#playerBox").resize(function () {
+        $("#player").height($("#playerBox").height());
+        $("#player").width($("#playerBox").width());
+    });
+    
 });
+
+function updateSentence(pos, newValue) {
+    var sourceText = $("#txtSource").val();
+    //var re = new RegExp("\/" + classActualName + "\/([^\/]*)\/", "g");
+    //lineText = lineText.replace(re, '<span class="' + classActualName + '">$1</span>');
+    var textToSearch = '{|' + pos + '|';
+    var indexOfItem = sourceText.indexOf(textToSearch);
+    var indexOfMiddlePipe = sourceText.indexOf('|', indexOfItem+2);
+    var indexOfEnd = sourceText.indexOf('|}', indexOfMiddlePipe+1);
+    var newString = sourceText.substr(0, indexOfMiddlePipe+1) + newValue + sourceText.substr(indexOfEnd);
+    $("#txtSource").val(newString);
+    updateOutput();
+}
 
 //Source: http://stackoverflow.com/questions/1219860/html-encoding-in-javascript-jquery
 
@@ -149,7 +161,7 @@ function convertSourceToOutput(sourceText, includeVideo, divHeight) {
                 htmlRaw = lineText;
             }
             htmlRaw = replaceAll(htmlRaw, '/n/', '<br/>');
-            var prefix = '<span class="clickable" onclick="playVideoAt(' + location + ')">';
+            var prefix = '<span class="clickable" onclick="playVideoAt(' + (location/1000) + ')">';
             var suffix = '</span>';
             if (htmlRaw.startsWith('<span class=')) {
                 prefix = '';
@@ -200,7 +212,7 @@ function keyUpEvent(e) {
         tb.value = text.slice(0, -4);
     }
     if (text.length === 1 && isClear) {
-        window.currPosition = player.getCurrentTime();
+        window.currPosition = Math.ceil(player.getCurrentTime()*1000);
         $("#spnNextJot").text('Next jot at position ' + window.currPosition + ' s');
         isClear = false;
     }
@@ -352,6 +364,58 @@ function updateOutput() {
     $("#viewoutput").html(output);
     $("#txtOutputHTML").text(outputWithPlayer);
     $("#pnlNotes").scrollTop($("#pnlNotes")[0].scrollHeight);
+    renderSource();
+}
+
+function renderSource() {
+    var sourceText = $("#txtSource").val();
+    var allText = sourceText;
+    var lines = allText.split("{|");
+    var table =  $('<table/>', {});
+    $.each(lines, function (index, value) {
+        if (value !== '') {
+            var items = value.split('|');
+            var pos = parseFloat(items[0]);
+            var text = items[1].split('|}')[0];
+            var tr = $('<tr/>', {});
+            var textArea = $('<textarea>', {
+                id: "txt_" + pos.toString()
+            });
+            $(textArea).text(text);
+            $(textArea).prop('readonly', true);
+            var tdTextArea = $('<td/>', {});
+            tdTextArea.append(textArea);
+            var button = $('<button/>', {
+                id: "btnEditText_" + pos.toString(),
+                text: 'Edit'
+            });
+            $(button).addClass('btn');
+            $(button).addClass('btn-primary');
+            $(button).addClass('editable');
+            var tdButton = $('<td/>', {});
+            tdButton.append(button);
+            tr.append(tdTextArea).append(tdButton);
+            table.append(tr);
+        }
+    });
+    $("#source").html(table.html());
+    $(".btn").click(function () {
+        if (this.id.startsWith('btnEditText_')) {
+            var id = this.id;
+            var pos = id.split('_')[1];
+            if (this.textContent === 'Edit') {
+                var taId = '#txt_' + pos.toString();
+                $(taId).prop('readonly', false);
+                this.textContent = 'Save';
+            }
+            else if (this.textContent === 'Save') {
+                var taId = '#txt_' + pos.toString();
+                var newValue = $(taId).val();
+                updateSentence(pos, newValue);
+                this.textContent = 'Edit';
+            }
+        }
+    });
 }
 
 // Array Remove - By John Resig (MIT Licensed)
