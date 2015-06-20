@@ -43,6 +43,8 @@ $(function () {
         $("#player").width($("#playerBox").width());
     });
     $("#slider").slider();
+    window.currVideoID = 'unknown';
+    $("#saveLink").attr("href", "data:text/plain;charset=utf-8," + $("#txtSource").val()).attr("download", window.currVideoID + ".txt");
 });
 
 function updateSentence(pos, newValue, newPos) {
@@ -72,7 +74,7 @@ function deleteSentence(pos) {
         var indexOfItem = sourceText.indexOf(textToSearch);
         var indexOfMiddlePipe = sourceText.indexOf('|', indexOfItem + 2);
         var indexOfEnd = sourceText.indexOf('|}', indexOfMiddlePipe + 1);
-        var newString = sourceText.substr(0, indexOfItem) + sourceText.substr(indexOfEnd);
+        var newString = sourceText.substr(0, indexOfItem - 1) + sourceText.substr(indexOfEnd + 2);
         window.textSource = newString;
         $("#txtSource").val(window.textSource);
         updateOutput();
@@ -289,6 +291,20 @@ function getCommand(text) {
 }
 
 function addToSource(text, position) {
+    var sourceText = $("#txtSource").val();
+    var allText = sourceText;
+    var lines = allText.split("{|");
+    $.each(lines, function(index, value) {
+        if (value !== '') {
+            var items = value.split('|');
+            var pos = parseFloat(items[0]);
+            if (position === pos) {
+                //avoid multiple lines having the same exact position,
+                //which can mess up parsing
+                position += position + 1; 
+            }
+        }
+    });
     window.textSource += '{|'+position+'|' + text + '|}';
     $("#txtSource").val(window.textSource);
 }
@@ -387,6 +403,12 @@ function updateOutput() {
     $("#txtOutputHTML").text(outputWithPlayer);
     $("#pnlNotes").scrollTop($("#pnlNotes")[0].scrollHeight);
     renderSource();
+}
+
+function saveFile() {
+    window.currVideoID = getVideoIDFromURL(player.getVideoUrl());
+    var blob = new Blob($("#txtSource").val(), { type: "text/plain;charset=utf-8" });
+    saveAs(blob, currVideoID+".txt");
 }
 
 function renderSource() {
@@ -529,7 +551,8 @@ function TryParseInt(str, defaultValue) {
 
 function previewHtml() {
     var newWindow = window.open();
-    newWindow.document.write($("#txtOutputHTML").val());
+    var fullHtml = '<html><head><title>Preview</title></head><body>' + $("#txtOutputHTML").val() + '</body></html>';
+    newWindow.document.write(fullHtml);
 }
 
 $(function () {

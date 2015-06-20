@@ -75,6 +75,7 @@
     <Content Include="js\bootstrap.js" />
     <Content Include="js\bootstrap.min.js" />
     <Content Include="js\collections.js" />
+    <Content Include="js\FileSaver.min.js" />
     <Content Include="js\impress.js" />
     <Content Include="js\index.js" />
     <Content Include="js\jquery-2.1.1.min.js" />
